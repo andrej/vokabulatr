@@ -58,7 +58,7 @@ fn quiz_loop(quiz: &mut quiz::Quiz, matcher: &mut quiz::Matcher) -> ProgramMode 
     let history_string = flashcard.statistics.history_string("✔", "✗");
     let global_history_string = quiz.aggregate_statistics.history_string("✔", "✗");
     println!("");
-    println!("-{:->3}/{:-<3}--{:-<64}-{:->3}%-", quiz.current, quiz.items.len(), history_string, percent_recently_correct);
+    println!("-{:->3}/{:-<3}--{:-<64}-{:->3}%-", quiz.selection[quiz.current], quiz.items.len(), history_string, percent_recently_correct);
     println!("|  {:74}  |", question);
     println!("--{:->76}--", global_history_string);
     println!("");
@@ -90,9 +90,9 @@ fn quiz_loop(quiz: &mut quiz::Quiz, matcher: &mut quiz::Matcher) -> ProgramMode 
 }
 
 fn quit_screen(quiz: &quiz::Quiz) {
-    let percent_correct = quiz.aggregate_statistics.correct as f64 / quiz.aggregate_statistics.attempts as f64;
+    let percent_correct = quiz.aggregate_statistics.correct as f64 / quiz.aggregate_statistics.attempts as f64 * 100.0;
     println!("Attempts: {:5}", quiz.aggregate_statistics.attempts);
-    println!("Correct:  {:5}, {:3}%", quiz.aggregate_statistics.correct, percent_correct);
+    println!("Correct:  {:5} ({:3}%)", quiz.aggregate_statistics.correct, percent_correct);
     println!("Goodbye!");
 }
 
@@ -104,6 +104,7 @@ fn main() {
     }
     let file = std::fs::File::open(&args[1]).expect("Could not open file");
     let mut quiz = quiz::Quiz::from_csv_input(file);
+    quiz.shuffle_selection();
     let mut matcher = quiz::Matcher::new();
     loop {
         program_mode = match program_mode {

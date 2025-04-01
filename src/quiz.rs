@@ -152,7 +152,7 @@ impl Quiz {
         let mut ret = Self {
             items,
             selection: Vec::<usize>::new(),
-            current: n_items - 1,
+            current: 0,
             aggregate_statistics: FlashcardStatistics::new()
         };
         ret.select_all();
